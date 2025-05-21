@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  proxy:
+    build: .
+    container_name: 3proxy_via_stunnel
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - CERT_MODE=${CERT_MODE}
+      - DOMAIN=${DOMAIN}
+      - PROXY_EXT_IP=${PROXY_EXT_IP}
+      - PROXY_INT_IP=${PROXY_INT_IP}
+      - PROXY_PORT_HTTPS=${PROXY_PORT_HTTPS}
+      - PROXY_PORT_HTTP=${PROXY_PORT_HTTP}
+      - PROXY_USER_LIST=${PROXY_USER_LIST}
+      - STUNNEL_ACCESS_MODE=${STUNNEL_ACCESS_MODE}
+    volumes:
+      - ./certs:/etc/letsencrypt

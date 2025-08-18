@@ -67,7 +67,7 @@ docker compose up -d
 
 ---
 
-## 📂 Структура
+## 📂 Structure
 - `Dockerfile`
 - `entrypoint.sh` — generates configs and runs services
 - `docker-compose.yml`

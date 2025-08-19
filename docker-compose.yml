@@ -15,5 +15,6 @@ services:
       - PROXY_PORT_HTTP=${PROXY_PORT_HTTP}
       - PROXY_USER_LIST=${PROXY_USER_LIST}
       - STUNNEL_ACCESS_MODE=${STUNNEL_ACCESS_MODE}
+      - PROXY_PORT_SOCKS=${PROXY_PORT_SOCKS}
     volumes:
       - ./certs:/etc/letsencrypt

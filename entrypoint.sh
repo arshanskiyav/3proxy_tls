@@ -5,6 +5,7 @@ CERT_MODE="${CERT_MODE:-dns}"
 DOMAIN="${DOMAIN:-example.com}"
 PROXY_PORT_HTTP=${PROXY_PORT_HTTP:-3128}
 PROXY_PORT_HTTPS=${PROXY_PORT_HTTPS:-443}
+PROXY_PORT_SOCKS=${PROXY_PORT_SOCKS:-1080}
 CERT_DIR="/etc/letsencrypt/live/$DOMAIN"
 WEBROOT="/var/www/letsencrypt"
 
@@ -75,6 +76,7 @@ nscache 65536
 auth cache strong
 allow *
 proxy -n -p$PROXY_PORT_HTTP -a
+socks -n -p$PROXY_PORT_SOCKS -a
 EOF
 
 # TCP Wrappers stunnel
@@ -108,7 +110,8 @@ echo
 echo "=== ATTENTION ==="
 echo
 echo "You have to check your firewall rulles"
-echo "For the proxy to work, you need to open port $PROXY_PORT_HTTPS"
+echo "For the HTTP/HTTPS proxy to work, you need to open port $PROXY_PORT_HTTP and $PROXY_PORT_HTTPS"
+echo "For the SOCKS proxy to work, you need to open port $PROXY_PORT_SOCKS"
 echo "For letsencrypt to work, you need to open port 80 (sometimes 443)"
 echo
 if [ "$CERT_MODE" = "ip" ]; then

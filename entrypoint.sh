@@ -36,10 +36,10 @@ server {
 EOF
 
   # CRON for letsencrypt FQDN
-  echo "0 3 * * * certbot renew --webroot -w $WEBROOT --quiet --deploy-hook 'nginx -s reload && killall -HUP stunnel'" > /etc/cron.d/certbot_renew
-  chmod 0644 /etc/cron.d/certbot_renew
-  crontab /etc/cron.d/certbot_renew
-  cron
+        echo "0 3 * * * certbot renew --force-renewal --webroot -w $WEBROOT --verbose --deploy-hook 'nginx -s reload && killall -HUP stunnel' --pre-hook 'service nginx start' --post-hook 'service nginx stop'" > /etc/cron.d/certbot_renew
+        chmod 0644 /etc/cron.d/certbot_renew
+        crontab /etc/cron.d/certbot_renew
+        cron
 fi
 
 if [ ! -f "$CERT_DIR/fullchain.pem" ] || [ ! -f "$CERT_DIR/privkey.pem" ]; then
@@ -52,8 +52,12 @@ if [ ! -f "$CERT_DIR/fullchain.pem" ] || [ ! -f "$CERT_DIR/privkey.pem" ]; then
                 cp "$CERT_DIR/fullchain.pem" "/etc/letsencrypt/proxy.crt"
         else
                 nginx
-                certbot certonly --non-interactive --agree-tos --register-unsafely-without-email \
-                        --webroot -w "$WEBROOT" -d "$DOMAIN"
+                if ! timeout 3 bash -c "</dev/tcp/0.0.0.0/80" 2>/dev/null; then
+                        echo "\033[1;31m[ERROR] Port 80 is not open. Let's Encrypt requires it for HTTP-01 challenge.\033[0m"
+                        echo "\033[1;31m[ERROR] Please make sure port 80 is accessible from the internet.\033[0m"
+                        exit 1
+                fi
+                certbot certonly --non-interactive --agree-tos --register-unsafely-without-email --webroot -w "$WEBROOT" -d "$DOMAIN"
                 nginx -s stop
         fi
 fi
@@ -67,7 +71,7 @@ nserver 8.8.8.8
 nserver 1.1.1.1
 nscache 65536
 external ${PROXY_EXT_IP:-0.0.0.0}
-internal ${PROXY_INT_IP:-0.0.0.0}
+internal ${PROXY_INT_IP:-PROXY_EXT_IP}
 timeouts 1 5 30 60 180 1800 15 60
 users ${PROXY_USER_LIST:-user:CL:pass}
 log

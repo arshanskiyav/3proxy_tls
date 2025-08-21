@@ -5,7 +5,7 @@ CERT_MODE="${CERT_MODE:-dns}"
 DOMAIN="${DOMAIN:-example.com}"
 PROXY_PORT_HTTP=${PROXY_PORT_HTTP:-3128}
 PROXY_PORT_HTTPS=${PROXY_PORT_HTTPS:-443}
-PROXY_PORT_SOCKS=${PROXY_PORT_SOCKS:-1080}
+PROXY_PORT_SOCKS=${PROXY_PORT_SOCKS:-}
 CERT_DIR="/etc/letsencrypt/live/$DOMAIN"
 WEBROOT="/var/www/letsencrypt"
 
@@ -64,6 +64,11 @@ fi
 
 
 # Config 3proxy ENV
+SOCKS_LINE=""
+if [ -n "${PROXY_PORT_SOCKS:-}" ]; then
+         SOCKS_LINE="socks -n -p$PROXY_PORT_SOCKS -a"
+fi
+
 cat <<EOF > /etc/3proxy/3proxy.cfg
 setgid ${gid:-65534}
 setuid ${uid:-65534}
@@ -80,7 +85,8 @@ nscache 65536
 auth cache strong
 allow *
 proxy -n -p$PROXY_PORT_HTTP -a
-socks -n -p$PROXY_PORT_SOCKS -a
+$SOCKS_LINE
+
 EOF
 
 # TCP Wrappers stunnel
@@ -103,7 +109,6 @@ debug=notice
 libwrap = yes
 client = no
 accept = $PROXY_PORT_HTTPS
-#connect =  ${PROXY_EXT_IP:-127.0.0.1}:$PROXY_PORT_HTTP
 connect = ${PROXY_EXT_IP:-127.0.0.1}:$PROXY_PORT_HTTP
 cert = $CERT_DIR/fullchain.pem
 key = $CERT_DIR/privkey.pem

@@ -31,6 +31,7 @@ PROXY_EXT_IP=225.222.111.123
 PROXY_INT_IP=225.222.111.123
 PROXY_PORT_HTTP=3128
 PROXY_PORT_HTTPS=443
+PROXY_PORT_SOCKS=1080
 PROXY_USER_LIST=user1:CL:pass1 user2:CL:pass2
 STUNNEL_POLICY_DENY=false
 STUNNEL_IP_LIST=1.2.3.4 5.6.7.8
@@ -53,6 +54,7 @@ docker compose up -d
 | `PROXY_INT_IP`         | IP used for output connections                                            | 0.0.0.0              | no          |
 | `PROXY_PORT_HTTP`      | 3proxy port | 3128                   | no          |
 | `PROXY_PORT_HTTPS`     | Stunnel port                                          | 443                    | no          |
+| `PROXY_PORT_SOCKS`     | SOCKS port                                          | 1080                    | no          |
 | `PROXY_USER_LIST`      | List of users in 3proxy format (see examples) : `user:CL:pass` space separated       | user:CL:pass           | yes           |
 | `STUNNEL_ACCESS_MODE`  | `deny` — deny-politics (only ip from STUNNEL_IP_LIST has access), <br>`allow` — allow-politic (STUNNEL_IP_LIST contains blocked IP addresses)                         | allow                  | no          |
 | `STUNNEL_IP_LIST`      | A list of IP addresses or subnets separated by spaces.                                       | —                      | no (except in cases where STUNNEL_ACCESS_MODE is defined) |
